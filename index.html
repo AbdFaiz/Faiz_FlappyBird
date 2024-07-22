@@ -19,10 +19,47 @@
         background-size: cover;
         border: 1px solid black;
       }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 5px 5px 10px 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+      }
+      .modal button {
+        margin: 5px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
     </style>
   </head>
   <body>
     <canvas id="world"></canvas>
+
+    <div id="gameOverModal" class="modal">
+      <p>Game Over</p>
+      <button id="restartBtn">Restart</button>
+      <button id="quitBtn">Udahan ah</button>
+    </div>
+    <div id="overlay" class="overlay"></div>
+
     <script>
       // Initialize canvas
       let canvas = document.getElementById("world");
@@ -117,18 +154,9 @@
         context.fillStyle = "black";
         context.strokeRect(xPipa, yPipaBawah, lebarPipa, tinggiPipaBawah);
 
-        if (
-          xBird + wBird >= xPipa &&
-          xBird <= xPipa + lebarPipa &&
-          (yBird <= tinggiPipaAtas || yBird + hBird >= yPipaBawah)
-        ) {
+        if (xBird + wBird >= xPipa && xBird <= xPipa + lebarPipa && (yBird <= tinggiPipaAtas || yBird + hBird >= yPipaBawah)) {
           gameOver();
-        } else if (
-          xBird + wBird >= xPipa &&
-          xBird <= xPipa + lebarPipa &&
-          yBird > tinggiPipaAtas &&
-          yBird + hBird < yPipaBawah
-        ) {
+        } else if (xBird + wBird >= xPipa && xBird <= xPipa + lebarPipa && yBird > tinggiPipaAtas && yBird + hBird < yPipaBawah) {
           if (!passed) {
             score++;
             console.log(score);
@@ -166,9 +194,19 @@
         tetot.currentTime = 0;
         tetot.play();
 
-        alert("Game Over");
-        window.location.reload();
+        // Show the modal
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("gameOverModal").style.display = "block";
       }
+
+      document.getElementById("restartBtn").addEventListener("click", function () {
+        window.location.reload();
+      });
+
+      document.getElementById("quitBtn").addEventListener("click", function () {
+        window.open("", "_self", ""); // This line is needed to close the window in some browsers
+        window.close();
+      });
     </script>
   </body>
 </html>
