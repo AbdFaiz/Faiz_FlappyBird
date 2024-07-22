@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Canvas JS</title>
     <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+      }
       #world {
         background-image: url("https://user-images.githubusercontent.com/18351809/46888871-624a3900-ce7f-11e8-808e-99fd90c8a3f4.png");
         background-repeat: no-repeat;
@@ -14,13 +22,21 @@
     </style>
   </head>
   <body>
-    <canvas id="world" width="500" height="400"></canvas>
+    <canvas id="world"></canvas>
     <script>
-      // inisialisasi canvas
+      // Initialize canvas
       let canvas = document.getElementById("world");
       let context = canvas.getContext("2d");
 
-      //Import Assets
+      // Set canvas size based on window size
+      function resizeCanvas() {
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = window.innerHeight * 0.7;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // Import Assets
       let bird = new Image();
       bird.src = "bird.png";
 
@@ -32,7 +48,7 @@
       tetot.src = "tetot.mp3";
       tetot.load();
 
-      //State
+      // State
       let g = 0;
       let xBird = 0;
       let yBird = canvas.height / 2 - 100;
@@ -41,14 +57,22 @@
       let score = 0;
       let passed = false;
 
+      function jump() {
+        g = g - 15;
+        tuing.pause();
+        tuing.currentTime = 0;
+        tuing.play();
+      }
+
+      // Event listeners for keyboard and touch
       window.addEventListener("keydown", function (event) {
         if (event.keyCode == 32) {
-          g = g - 15;
-
-          tuing.pause();
-          tuing.currentTime = 0;
-          tuing.play();
+          jump();
         }
+      });
+
+      canvas.addEventListener("touchstart", function () {
+        jump();
       });
 
       let lebarPipa = 50;
@@ -60,7 +84,7 @@
       let yPipaAtas = 0;
       let yPipaBawah = tinggiPipaAtas + batasAman;
 
-      // Membuat FPS
+      // Create FPS
       window.interval = setInterval(function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -81,21 +105,30 @@
 
         xPipa = xPipa - kecepatanPipa;
 
-        // pipa atas
+        // Top pipe
         context.fillStyle = "green";
         context.fillRect(xPipa, yPipaAtas, lebarPipa, tinggiPipaAtas);
         context.fillStyle = "black";
         context.strokeRect(xPipa, yPipaAtas, lebarPipa, tinggiPipaAtas);
 
-        // pipa bawah
+        // Bottom pipe
         context.fillStyle = "green";
         context.fillRect(xPipa, yPipaBawah, lebarPipa, tinggiPipaBawah);
         context.fillStyle = "black";
         context.strokeRect(xPipa, yPipaBawah, lebarPipa, tinggiPipaBawah);
 
-        if (xBird + wBird >= xPipa && xBird <= xPipa + lebarPipa && (yBird <= tinggiPipaAtas || yBird + hBird >= yPipaBawah)) {
+        if (
+          xBird + wBird >= xPipa &&
+          xBird <= xPipa + lebarPipa &&
+          (yBird <= tinggiPipaAtas || yBird + hBird >= yPipaBawah)
+        ) {
           gameOver();
-        } else if (xBird + wBird >= xPipa && xBird <= xPipa + lebarPipa && yBird > tinggiPipaAtas && yBird + hBird < yPipaBawah) {
+        } else if (
+          xBird + wBird >= xPipa &&
+          xBird <= xPipa + lebarPipa &&
+          yBird > tinggiPipaAtas &&
+          yBird + hBird < yPipaBawah
+        ) {
           if (!passed) {
             score++;
             console.log(score);
